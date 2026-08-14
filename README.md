@@ -48,10 +48,25 @@ React 19 · TypeScript · Vite · Tailwind CSS v4 · shadcn/ui
 `/api/aion2/*` 를 부르고, 이걸 서버 쪽에서 중계한다.
 
 - **개발**: [vite.config.ts](vite.config.ts)의 `server.proxy`
-- **배포**: [api/aion2/[...path].ts](api/aion2/%5B...path%5D.ts) — Vercel Edge Function
+- **배포**: [functions/api/aion2/[[path]].ts](functions/api/aion2/) — Cloudflare Pages Function
 
-GitHub Pages 같은 **정적 호스팅에는 그대로 못 올린다**(중계할 서버가 없어서 전부 CORS로 실패).
-Vercel / Cloudflare Pages Functions / Netlify Functions 중 하나를 써야 한다.
+GitHub Pages 같은 **순수 정적 호스팅에는 못 올린다**. 중계할 서버가 없어서 전부 CORS로 실패한다.
+
+## 자동 배포
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml)
+
+- 모든 브랜치 push / PR → `build` (npm ci + npm run build, 타입 체크 포함)
+- `main` push → `deploy` (Cloudflare Pages, 프로젝트명 `aioff`)
+
+리포지토리 **Settings → Secrets and variables → Actions** 에 두 개가 필요하다.
+
+| Secret | 값 |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare 대시보드 → My Profile → API Tokens → Create Token → **Edit Cloudflare Workers** 템플릿 |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare 대시보드 우측 하단 Account ID |
+
+배포 주소는 `https://aioff.pages.dev`.
 
 ## 실행
 

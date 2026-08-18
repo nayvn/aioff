@@ -172,6 +172,26 @@ export interface StoneStat {
   slotPos: number
 }
 
+export interface ItemSubSkill {
+  id: number
+  name: string
+  icon: string
+  level: number
+}
+
+export interface ItemSetBonus {
+  degree: number
+  descriptions: string[]
+}
+
+export interface ItemSet {
+  id: string
+  name: string
+  equippedCount: number
+  items: { id: number; name: string; grade: string; equipped?: boolean }[]
+  bonuses: ItemSetBonus[]
+}
+
 export interface ItemDetail {
   id: number
   name: string
@@ -193,6 +213,9 @@ export interface ItemDetail {
   subStats: ItemStat[]
   magicStoneStat: StoneStat[]
   godStoneStat: { name: string; desc?: string; icon?: string; grade?: string }[]
+  // 아르카나 일부는 능력 대부분이 여기 들어 있다 (mainStats 는 1~2개뿐)
+  subSkills?: ItemSubSkill[]
+  set?: ItemSet
   sources?: string[]
 }
 
@@ -247,8 +270,15 @@ export function slotLabel(slotPosName: string) {
   return SLOT_LABEL[slotPosName] ?? slotPosName
 }
 
+export interface EquipGroup {
+  key: string
+  label: string
+  emoji: string
+  slots: string[]
+}
+
 /** 장비를 화면에 묶어서 보여줄 그룹 */
-export const EQUIP_GROUPS: { key: string; label: string; emoji: string; slots: string[] }[] = [
+export const EQUIP_GROUPS: EquipGroup[] = [
   { key: 'weapon', label: '무기', emoji: '⚔️', slots: ['MainHand', 'SubHand'] },
   {
     key: 'armor',
@@ -275,10 +305,14 @@ export const EQUIP_GROUPS: { key: string; label: string; emoji: string; slots: s
     ],
   },
   { key: 'rune', label: '룬', emoji: '🔮', slots: ['Rune1', 'Rune2'] },
+]
+
+/** 아르카나는 별도 탭으로 뺐다 */
+export const ARCANA_GROUPS: EquipGroup[] = [
   {
     key: 'arcana',
     label: '아르카나',
-    emoji: '🃏',
+    emoji: '🎴',
     slots: Array.from({ length: 10 }, (_, i) => `Arcana${i + 1}`),
   },
 ]

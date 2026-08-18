@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getItemDetail } from '@/lib/api'
-import type { EquipItem, ItemDetail } from '@/lib/aion2'
+import type { EquipGroup, EquipItem, ItemDetail } from '@/lib/aion2'
 import { EQUIP_GROUPS, gradeColor, slotLabel } from '@/lib/aion2'
 import { EnchantBadge, GameIcon, Panel, Section, SheetHandle } from '@/components/common'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
@@ -14,9 +14,11 @@ interface Target {
 export function EquipmentSection({
   items,
   target,
+  groups = EQUIP_GROUPS,
 }: {
   items: EquipItem[]
   target: Target
+  groups?: EquipGroup[]
 }) {
   const [selected, setSelected] = useState<EquipItem | null>(null)
   const bySlot = new Map(items.map((i) => [i.slotPosName, i]))
@@ -24,7 +26,7 @@ export function EquipmentSection({
   return (
     <>
       <div className="flex flex-col gap-6">
-        {EQUIP_GROUPS.map((group) => {
+        {groups.map((group) => {
           const rows = group.slots.map((s) => bySlot.get(s)).filter(Boolean) as EquipItem[]
           if (rows.length === 0) return null
           return (
@@ -196,6 +198,37 @@ function ItemSheet({
                     <span className="font-medium tabular-nums">{s.value}</span>
                   </li>
                 ))}
+              </StatBlock>
+            ) : null}
+
+            {detail.subSkills?.length ? (
+              <StatBlock emoji="🌀" title="스킬 옵션">
+                {detail.subSkills.map((s) => (
+                  <li key={s.id} className="flex items-center gap-2">
+                    <GameIcon src={s.icon} grade="Unique" size={24} alt="" />
+                    <span className="min-w-0 flex-1 truncate">{s.name}</span>
+                    <span className="font-semibold tabular-nums text-primary">Lv.{s.level}</span>
+                  </li>
+                ))}
+              </StatBlock>
+            ) : null}
+
+            {detail.set?.bonuses?.length ? (
+              <StatBlock
+                emoji="🧩"
+                title={`세트 효과 · ${detail.set.name} (${detail.set.equippedCount}종 착용)`}
+              >
+                {detail.set.bonuses.map((b) => {
+                  const active = detail.set!.equippedCount >= b.degree
+                  return (
+                    <li key={b.degree} className="flex gap-2" style={{ opacity: active ? 1 : 0.45 }}>
+                      <span className="shrink-0 font-semibold text-primary">{b.degree}종</span>
+                      <span className="min-w-0 flex-1 leading-relaxed text-muted-foreground">
+                        {b.descriptions.join(' / ')}
+                      </span>
+                    </li>
+                  )
+                })}
               </StatBlock>
             ) : null}
 

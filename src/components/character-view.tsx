@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getCharacterInfo, getEquipment } from '@/lib/api'
 import type { CharacterInfo, EquipmentResponse } from '@/lib/aion2'
-import { RACE_EMOJI, formatNumber, gradeColor } from '@/lib/aion2'
+import { ARCANA_GROUPS, RACE_EMOJI, formatNumber, gradeColor } from '@/lib/aion2'
 import { EmptyState, Panel } from '@/components/common'
 import { EquipmentSection } from '@/components/equipment'
 import { DaevanionSection } from '@/components/daevanion'
@@ -12,7 +12,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 const TABS = [
   { key: 'summary', label: '요약', emoji: '📋' },
   { key: 'equip', label: '장비', emoji: '⚔️' },
-  { key: 'card', label: '카드', emoji: '🃏' },
+  { key: 'arcana', label: '아르카나', emoji: '🎴' },
+  { key: 'daevanion', label: '데바니온', emoji: '🃏' },
   { key: 'skill', label: '스킬', emoji: '✨' },
 ]
 
@@ -74,10 +75,15 @@ export function CharacterView({
       <ProfileCard info={info} itemLevel={itemLevel} />
 
       <Tabs defaultValue={initialTab()} onValueChange={syncTabToUrl} className="gap-4">
-        <TabsList className="sticky top-[58px] z-20 grid w-full grid-cols-4 bg-background/90 backdrop-blur">
+        {/* 탭이 5개라 좁은 화면에서도 들어가도록 이모지를 라벨 위로 쌓는다 */}
+        <TabsList className="sticky top-[58px] z-20 grid h-auto w-full grid-cols-5 bg-background/90 backdrop-blur">
           {TABS.map((t) => (
-            <TabsTrigger key={t.key} value={t.key} className="text-[13px]">
-              <span aria-hidden className="mr-1">
+            <TabsTrigger
+              key={t.key}
+              value={t.key}
+              className="h-auto flex-col gap-0.5 px-1 py-1.5 text-[11px]"
+            >
+              <span aria-hidden className="text-[15px] leading-none">
                 {t.emoji}
               </span>
               {t.label}
@@ -103,7 +109,19 @@ export function CharacterView({
           )}
         </TabsContent>
 
-        <TabsContent value="card">
+        <TabsContent value="arcana">
+          {equip ? (
+            <EquipmentSection
+              items={equip.equipment.equipmentList}
+              target={target}
+              groups={ARCANA_GROUPS}
+            />
+          ) : (
+            <Skeleton className="h-96 w-full rounded-2xl" />
+          )}
+        </TabsContent>
+
+        <TabsContent value="daevanion">
           <DaevanionSection boards={info.daevanion?.boardList ?? []} target={target} />
         </TabsContent>
 

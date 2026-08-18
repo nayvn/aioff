@@ -11,7 +11,7 @@ interface Target {
   serverId: number
 }
 
-/** 데바니온 = 인게임 카드작. 보드 8개의 개방률을 보여주고, 누르면 노드 배치를 펼친다. */
+/** 데바니온 보드 8개의 개방률을 보여주고, 누르면 노드 배치를 펼친다. */
 export function DaevanionSection({
   boards,
   target,
